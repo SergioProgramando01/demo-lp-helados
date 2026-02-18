@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sweet Ice | Pedidos WhatsApp</title>
+    <meta name="description"
+        content="Helados artesanales 100% fruta real. Pide tus conos y copas favoritas por WhatsApp en Cúcuta.">
+    <meta name="keywords" content="helados, postres, domicilio, cúcuta, dulce, fruta natural">
+    <meta name="robots" content="index, follow">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #ff6b81;
+            --secondary: #7bed9f;
+            --bg: #fff0f5;
+            --text: #57606f;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding-top: 70px;
+        }
+
+        /* HEADER */
+        .navbar {
+            background: #fff;
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(255, 107, 129, 0.1);
+            border-radius: 0 0 20px 20px;
+        }
+
+        .logo {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.6rem;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .nav-icons {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-link {
+            text-decoration: none;
+            color: #aaa;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .cart-trigger {
+            position: relative;
+            font-size: 1.5rem;
+            color: var(--primary);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .cart-trigger:hover {
+            transform: scale(1.1);
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background: var(--secondary);
+            color: #fff;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            opacity: 0;
+            transform: scale(0);
+            transition: 0.3s;
+        }
+
+        .badge.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.4);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pop {
+            animation: pop 0.3s;
+        }
+
+        /* SLIDER */
+        .hero-slider {
+            position: relative;
+            height: 35vh;
+            overflow: hidden;
+            margin: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+            background: #fff;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            transition: 1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        .slide-content {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 15px 30px;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .slide h2 {
+            font-family: 'Fredoka One', cursive;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        /* GRID */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: 0.3s;
+        }
+
+        .card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .card-body {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .card h3 {
+            color: var(--primary);
+            font-family: 'Fredoka One', cursive;
+            margin-bottom: 5px;
+        }
+
+        .price {
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: block;
+            margin: 10px 0;
+        }
+
+        .btn-add {
+            background: var(--secondary);
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.2s;
+        }
+
+        .btn-add:hover {
+            background: #2ed573;
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-box {
+            background: #fff;
+            width: 90%;
+            max-width: 400px;
+            padding: 25px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: bounceIn 0.4s;
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            60% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .cart-list {
+            max-height: 250px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dashed #eee;
+        }
+
+        .qty-control {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: #f1f2f6;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .qty-btn {
+            border: none;
+            background: #fff;
+            color: var(--primary);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .total {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .btn-wa {
+            background: #25d366;
+            color: #fff;
+            width: 100%;
+            padding: 12px;
+            border-radius: 15px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-close {
+            display: block;
+            text-align: center;
+            color: #aaa;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+
+        /* FOOTER */
+        footer {
+            margin-top: 40px;
+            background: #fff;
+            padding: 40px 20px;
+            border-radius: 30px 30px 0 0;
+            text-align: center;
+        }
+
+        .socials {
+            margin-top: 15px;
+        }
+
+        .socials a {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="back-link"><i class="fas fa-chevron-left"></i> Volver</a>
+        <a href="#" class="logo">Sweet Ice 🍦</a>
+        <div class="cart-trigger" onclick="toggleCart()">
+            <i class="fas fa-shopping-bag"></i>
+            <span class="badge" id="badge">0</span>
+        </div>
+    </nav>
+
+    <div class="hero-slider">
+        <div class="slide active"
+            style="background-image: url('https://images.unsplash.com/photo-1501443762994-82bd5dace89a?q=80&w=1000');">
+            <div class="slide-content">
+                <h2>FRUTA REAL</h2>
+                <p>100% Natural</p>
+            </div>
+        </div>
+        <div class="slide"
+            style="background-image: url('https://images.unsplash.com/photo-1563805042-7684c019e1cb?q=80&w=1000');">
+            <div class="slide-content">
+                <h2>TOPPINGS</h2>
+                <p>¡Todo lo que quieras!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTROS (Mismos) -->
+    <div style="text-align:center; margin:20px; overflow-x:auto; white-space:nowrap;">
+        <button onclick="filter('all')"
+            style="background:var(--primary); color:#fff; border:none; padding:8px 20px; border-radius:20px; font-weight:bold; cursor:pointer;">Todos</button>
+        <button onclick="filter('conos')"
+            style="background:#fff; color:#555; border:none; padding:8px 20px; border-radius:20px; font-weight:bold; cursor:pointer;">Conos</button>
+        <button onclick="filter('copas')"
+            style="background:#fff; color:#555; border:none; padding:8px 20px; border-radius:20px; font-weight:bold; cursor:pointer;">Copas</button>
+    </div>
+
+    <div class="menu-grid">
+        <div class="card" data-cat="conos">
+            <img src="https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=500&q=60" class="card-img">
+            <div class="card-body">
+                <h3>Cono Fresa</h3>
+                <span class="price">$8.500</span>
+                <button class="btn-add" onclick="add('Cono Fresa', 8500)">AGREGAR ➕</button>
+            </div>
+        </div>
+        <div class="card" data-cat="conos">
+            <img src="https://images.unsplash.com/photo-1570197788417-0e82375c9371?q=80&w=500" class="card-img">
+            <div class="card-body">
+                <h3>Choco Avellana</h3>
+                <span class="price">$9.000</span>
+                <button class="btn-add" onclick="add('Choco Avellana', 9000)">AGREGAR ➕</button>
+            </div>
+        </div>
+        <div class="card" data-cat="copas">
+            <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?q=80&w=500" class="card-img">
+            <div class="card-body">
+                <h3>Banana Split</h3>
+                <span class="price">$15.000</span>
+                <button class="btn-add" onclick="add('Banana Split', 15000)">AGREGAR ➕</button>
+            </div>
+        </div>
+        <div class="card" data-cat="copas">
+            <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?q=80&w=500" class="card-img">
+            <div class="card-body">
+                <h3>Copa Brownie</h3>
+                <span class="price">$14.000</span>
+                <button class="btn-add" onclick="add('Copa Brownie', 14000)">AGREGAR ➕</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal-box">
+            <h2 style="color:var(--primary); text-align:center;">Tu Carrito 🛒</h2>
+            <div class="cart-list" id="list">
+                <p style="text-align:center; color:#aaa;">Vacío como mi corazón...</p>
+            </div>
+            <div class="total" id="total">$0</div>
+            <button class="btn-wa" onclick="send()">
+                <i class="fab fa-whatsapp"></i> PEDIR YA
+            </button>
+            <span class="btn-close" onclick="toggleCart()">Seguir antojándome</span>
+        </div>
+    </div>
+
+    <footer>
+        <h4>Visítanos</h4>
+        <p>Calle de los Dulces #88, Cúcuta</p>
+        <p><strong>Horario:</strong> 2:00 PM - 10:00 PM</p>
+        <div class="socials">
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-tiktok"></i></a>
+        </div>
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63261.73356066736!2d-72.54346908070624!3d7.908759310636416!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x8e664537b06d860b%3A0x629452427a9a147a!2zQ8O6Y3V0YSwgTm9ydGUgZGUgU2FudGFuZGVy!5e0!3m2!1ses!2sco!4v1700000000000!5m2!1ses!2sco"
+            width="100%" height="150" style="border:0; border-radius:15px; margin-top:20px;" allowfullscreen=""
+            loading="lazy"></iframe>
+    </footer>
+
+    <script>
+        let cart = [];
+
+        function toggleCart() {
+            const m = document.getElementById('modal');
+            m.style.display = (m.style.display === 'flex') ? 'none' : 'flex';
+        }
+
+        function add(name, price) {
+            let item = cart.find(i => i.name === name);
+            if (item) item.qty++;
+            else cart.push({ name, price, qty: 1 });
+
+            update();
+
+            // Animacion
+            const b = document.getElementById('badge');
+            b.classList.add('pop');
+            setTimeout(() => b.classList.remove('pop'), 300);
+        }
+
+        function change(name, v) {
+            let item = cart.find(i => i.name === name);
+            if (item) {
+                item.qty += v;
+                if (item.qty <= 0) cart = cart.filter(i => i.name !== name);
+            }
+            update();
+        }
+
+        function update() {
+            // Badge
+            const totalQty = cart.reduce((a, b) => a + b.qty, 0);
+            const badge = document.getElementById('badge');
+            badge.innerText = totalQty;
+            if (totalQty > 0) badge.classList.add('show'); else badge.classList.remove('show');
+
+            // List
+            const list = document.getElementById('list');
+            list.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) list.innerHTML = '<p style="text-align:center; color:#aaa;">Vacío...</p>';
+
+            cart.forEach(i => {
+                total += i.price * i.qty;
+                list.innerHTML += `
+                    <div class="cart-item">
+                        <div>
+                            <strong>${i.name}</strong><br>
+                            <small>$${i.price.toLocaleString('es-CO')}</small>
+                        </div>
+                        <div class="qty-control">
+                            <button class="qty-btn" onclick="change('${i.name}', -1)">-</button>
+                            <span>${i.qty}</span>
+                            <button class="qty-btn" onclick="change('${i.name}', 1)">+</button>
+                        </div>
+                    </div>`;
+            });
+            document.getElementById('total').innerText = '$' + total.toLocaleString('es-CO');
+        }
+
+        function send() {
+            if (cart.length === 0) return;
+            let msg = "Hola Sweet Ice! 🍧 *Pedido:*%0A%0A";
+            let total = 0;
+            cart.forEach(i => {
+                msg += `• ${i.qty}x ${i.name} - $${(i.price * i.qty).toLocaleString('es-CO')}%0A`;
+                total += i.price * i.qty;
+            });
+            msg += `%0A💰 *Total: $${total.toLocaleString('es-CO')}*`;
+            msg += `%0A%0A📍 *Datos de Entrega:*`;
+
+            window.open(`https://wa.me/573054786001?text=${msg}`, '_blank');
+        }
+
+        // Helpers
+        let idx = 0; const sl = document.querySelectorAll('.slide');
+        setInterval(() => { sl[idx].classList.remove('active'); idx = (idx + 1) % sl.length; sl[idx].classList.add('active'); }, 3000);
+
+        function filter(c) {
+            document.querySelectorAll('.card').forEach(x => x.style.display = (c === 'all' || x.dataset.cat === c) ? 'block' : 'none');
+        }
+    </script>
+</body>
+
+</html>
